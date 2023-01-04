@@ -1,0 +1,165 @@
+<div class="mx-5">
+  <div class="row">
+    <div class="col-12 align-items-center d-flex justify-content-between">
+      <div class="table-header">Orders</div>
+      <div class="mr-md-5 mr-sm-0">
+        <div class="btn-group mr-2" dropdown>
+          <select
+            (change)="onTableSizeChange($event)"
+            class="custom-select items-per-page-dropdown"
+          >
+            <option *ngFor="let size of tableSizes">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <p-tabView>
+      <p-tabPanel header="Paid">
+        <div class="card">
+          <div class="card-body">
+            <div class="row mx-2" *ngIf="listPaidOrders?.length > 0">
+              <table class="table table-borderless">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Order Reference</th>
+                    <th>Created At</th>
+                    <th>Payment Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let post of listPaidOrders
+                        | paginate
+                          : {
+                              itemsPerPage: tableSize,
+                              currentPage: currentPage + 1,
+                              totalItems: totalCount
+                            };
+                      let i = index
+                    "
+                  >
+                    <th scope="row">{{ i + 1 }}</th>
+                    <td>{{ post.order_ref }}</td>
+                    <td>{{ post.created_at | date : "medium" }}</td>
+                    <td>{{ post.paymentStatus | titlecase }}</td>
+
+                    <td>
+                      <!-- <button
+                  (click)="assign(post)"
+                  type="button"
+                  class="btn btn-warning"
+                >
+                  <span aria-hidden="true">Assign</span>
+                </button> -->
+                      <button
+                        routerLink="/order_details/{{ post.id }}"
+                        type="button"
+                        class="btn btn-info ml-2"
+                      >
+                        <span aria-hidden="true">Details</span>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <hr />
+            <div class="row mx-2" *ngIf="listPaidOrders?.length > 0">
+              <div class="d-flex justify-content-center">
+                <pagination-controls
+                  previousLabel="Prev"
+                  nextLabel="Next"
+                  (pageChange)="onTableDataChange($event)"
+                >
+                </pagination-controls>
+              </div>
+            </div>
+            <div class="row mx-2" *ngIf="listPaidOrders?.length == 0">
+              <div class="d-flex justify-content-center">
+                <p>No Orders Available</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+      <p-tabPanel header="Unpaid">
+        <div class="card">
+          <div class="card-body">
+            <div class="row mx-2" *ngIf="listUnpaidOrders?.length > 0">
+              <table class="table table-borderless">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Order Reference</th>
+                    <th>Created At</th>
+                    <th>Payment Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let post of listUnpaidOrders
+                        | paginate
+                          : {
+                              itemsPerPage: tableSize,
+                              currentPage: currentPage + 1,
+                              totalItems: totalCount
+                            };
+                      let i = index
+                    "
+                  >
+                    <th scope="row">{{ i + 1 }}</th>
+                    <td>{{ post.order_ref }}</td>
+                    <td>{{ post.created_at | date : "medium" }}</td>
+                    <td>{{ post.paymentStatus | titlecase }}</td>
+
+                    <td>
+                      <!-- <button
+                  (click)="assign(post)"
+                  type="button"
+                  class="btn btn-warning"
+                >
+                  <span aria-hidden="true">Assign</span>
+                </button> -->
+                      <button
+                        routerLink="/order_details/{{ post.id }}"
+                        type="button"
+                        class="btn btn-info ml-2"
+                      >
+                        <span aria-hidden="true">Details</span>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <hr />
+            <div class="row mx-2" *ngIf="listUnpaidOrders?.length > 0">
+              <div class="d-flex justify-content-center">
+                <pagination-controls
+                  previousLabel="Prev"
+                  nextLabel="Next"
+                  (pageChange)="onTableDataChange($event)"
+                >
+                </pagination-controls>
+              </div>
+            </div>
+            <div class="row mx-2" *ngIf="listUnpaidOrders?.length == 0">
+              <div class="d-flex justify-content-center">
+                <p>No Orders Available</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+</div>

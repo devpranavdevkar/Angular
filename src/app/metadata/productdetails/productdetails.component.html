@@ -1,0 +1,675 @@
+<div class="mx-5">
+  <!-- ===================================== -->
+  <h1>Hello</h1>
+  <!-- ===================================== -->
+  <div class="table-header">Product Details</div>
+  <div class="card mt-4">
+    <div class="card-body">
+      <div class="col-sm-12">
+        <div class="row" *ngIf="productData">
+          <div class="col-sm-6">
+            <div class="row">
+              <div class="col-sm-6">
+                <label><small>Product Name</small></label
+                ><br />
+                <p>{{ productData?.product_name }}</p>
+              </div>
+              <div class="col-sm-6">
+                <label><small>Product Description</small></label
+                ><br />
+                <p>{{ productData?.description }}</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <label><small>Is Live</small></label
+                ><br />
+                <p *ngIf="productData?.is_live == 0">Not Live</p>
+                <p *ngIf="productData?.is_live == 1">Live</p>
+              </div>
+              <div class="col-sm-6">
+                <label><small>Product New or Old</small></label
+                ><br />
+                <p *ngIf="productData?.is_new == 0">New Product</p>
+                <p *ngIf="productData?.is_new == 1">Old Product</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <label><small>Is On Sale</small></label
+                ><br />
+                <p *ngIf="productData?.is_on_sale == 0">Not On Sale</p>
+                <p *ngIf="productData?.is_on_sale == 1">On Sale</p>
+              </div>
+              <div class="col-sm-6">
+                <label><small>Price</small></label
+                ><br />
+                <p>{{ productData?.price }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <label><small>Product Image</small></label
+            ><br />
+            <img
+              style="max-width: 200px"
+              (click)="show(productData.primary_image)"
+              id="imageresource"
+              src="{{ commonService.baseUrl }}{{ productData?.primary_image }}"
+            />
+          </div>
+        </div>
+        <div class="row mx-2" *ngIf="!productData">
+          <div class="d-flex justify-content-center">
+            <p>No Data Available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Add Images  -->
+<div class="mx-5">
+  <div class="row">
+    <div class="col-12 align-items-center d-flex justify-content-between">
+      <div class="table-header">Product Variable Images</div>
+      <div class="mr-md-5 mr-sm-0">
+        <div class="btn-group mr-2" dropdown>
+          <button
+            type="button"
+            class="btn add-new-btn"
+            (click)="openModalWithClass(template)"
+          >
+            New
+          </button>
+          <select
+            (change)="onTableSizeChange($event)"
+            class="custom-select items-per-page-dropdown"
+          >
+            <option *ngFor="let size of tableSizes">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row mx-2" *ngIf="productdetails?.length > 0">
+        <table class="table table-borderless">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <!-- <th>Product Name</th> -->
+              <th>Product Image</th>
+              <!-- <th>City Wise Price</th> -->
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="
+                let post of productdetails
+                  | paginate
+                    : {
+                        itemsPerPage: tableSize,
+                        currentPage: currentPage + 1,
+                        totalItems: totalCount
+                      };
+                let i = index
+              "
+            >
+              <th scope="row">{{ post.id }}</th>
+              <!-- <td>{{post.product_name}}</td> -->
+              <td>
+                <img
+                  style="width: 10%"
+                  src="{{ commonService.baseUrl }}{{ post.image_url }}"
+                  alt=""
+                />
+              </td>
+              <!-- <td>{{post.size}}</td> -->
+              <!-- <td (click) = "show(post.image_url)"><img style="max-width: 100px;" id="imageresource" src="{{commonService.baseUrl}}{{post.image_url}}" ></td> -->
+              <td>{{ post.price }}</td>
+              <!-- <td><button (click)="showCityPrice(post)" class="btn btn-sm btn-outline-secondary">Details</button></td> -->
+              <td>
+                <a
+                  ><button
+                    type="button"
+                    class="btn table-action"
+                    (click)="selectData(post)"
+                    (click)="openModalWithClass(newtemplate)"
+                  >
+                    <i class="fa fa-pencil" aria-hidden="true"></i></button
+                ></a>
+                <a (click)="delete(post.id)"
+                  ><button type="button" class="btn table-action">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i></button
+                ></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <hr />
+      <div class="row mx-2" *ngIf="productdetails?.length > 0">
+        <div class="d-flex justify-content-center">
+          <pagination-controls
+            previousLabel="Prev"
+            nextLabel="Next"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+      </div>
+      <div
+        class="row mx-2"
+        *ngIf="!productdetails || productdetails?.length == 0"
+      >
+        <div class="d-flex justify-content-center">
+          <p>No Data Available</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ================ -->
+<!-- Add Color -->
+<div class="mx-5">
+  <div class="row">
+    <div class="col-12 align-items-center d-flex justify-content-between">
+      <div class="table-header">Add Product Colors</div>
+      <div class="mr-md-5 mr-sm-0">
+        <div class="btn-group mr-2" dropdown>
+          <button
+            type="button"
+            class="btn add-new-btn"
+            (click)="openModalWithClass(template)"
+          >
+            New
+          </button>
+          <select
+            (change)="onTableSizeChange($event)"
+            class="custom-select items-per-page-dropdown"
+          >
+            <option *ngFor="let size of tableSizes">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row mx-2" *ngIf="productdetails?.length > 0">
+        <table class="table table-borderless">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <!-- <th>Product Name</th> -->
+              <th>Product Color</th>
+              <!-- <th>City Wise Price</th> -->
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="
+                let post of productdetails
+                  | paginate
+                    : {
+                        itemsPerPage: tableSize,
+                        currentPage: currentPage + 1,
+                        totalItems: totalCount
+                      };
+                let i = index
+              "
+            >
+              <th scope="row">{{ post.id }}</th>
+              <!-- <td>{{post.product_name}}</td> -->
+              <td>
+                <img
+                  style="width: 10%"
+                  src="{{ commonService.baseUrl }}{{ post.image_url }}"
+                  alt=""
+                />
+              </td>
+              <!-- <td>{{post.size}}</td> -->
+              <!-- <td (click) = "show(post.image_url)"><img style="max-width: 100px;" id="imageresource" src="{{commonService.baseUrl}}{{post.image_url}}" ></td> -->
+              <td>{{ post.price }}</td>
+              <!-- <td><button (click)="showCityPrice(post)" class="btn btn-sm btn-outline-secondary">Details</button></td> -->
+              <td>
+                <a
+                  ><button
+                    type="button"
+                    class="btn table-action"
+                    (click)="selectData(post)"
+                    (click)="openModalWithClass(newtemplate)"
+                  >
+                    <i class="fa fa-pencil" aria-hidden="true"></i></button
+                ></a>
+                <a (click)="delete(post.id)"
+                  ><button type="button" class="btn table-action">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i></button
+                ></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <hr />
+      <div class="row mx-2" *ngIf="productdetails?.length > 0">
+        <div class="d-flex justify-content-center">
+          <pagination-controls
+            previousLabel="Prev"
+            nextLabel="Next"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+      </div>
+      <div
+        class="row mx-2"
+        *ngIf="!productdetails || productdetails?.length == 0"
+      >
+        <div class="d-flex justify-content-center">
+          <p>No Data Available</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ======================= -->
+<ng-template #cityPriceModal>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Edit Product</h4>
+    <button
+      type="button"
+      class="close pull-right"
+      aria-label="Close"
+      (click)="modalRef.hide()"
+    >
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row m-2">
+      <p>
+        <span class="form-heading">Add/Update City Wise Price</span>
+      </p>
+    </div>
+    <div class="row">
+      <div class="">
+        <form [formGroup]="cityPriceForm" class="row">
+          <div class="col-md-4 mb-3 p-field">
+            <span class="">
+              <p-dropdown
+                styleClass="w-100"
+                [options]="deliveryAllowedCityData"
+                formControlName="city_id"
+                optionLabel="name"
+                optionValue="id"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                placeholder="Select City"
+              >
+              </p-dropdown>
+              <small
+                *ngIf="
+                  cityPriceForm.controls.city_id.touched &&
+                  cityPriceForm.value?.city_id == -1
+                "
+                class="p-error"
+                >Please select Value</small
+              >
+            </span>
+          </div>
+          <div class="col-md-4 mb-3 p-field">
+            <span class="">
+              <input
+                value="{{ cityPriceForm.value?.price }}"
+                pInputText
+                formControlName="price"
+                class="w-100"
+                type="number"
+                placeholder="Price"
+                required
+              />
+              <small
+                *ngIf="
+                  cityPriceForm.controls.price.touched &&
+                  cityPriceForm.value?.price == ''
+                "
+                class="p-error"
+                >Please enter Value</small
+              >
+            </span>
+          </div>
+          <div class="col-md-4 mb-3 p-field">
+            <span class="">
+              <p-dropdown
+                styleClass="w-100"
+                [options]="isOnSaleOptions"
+                formControlName="is_on_sale"
+                optionLabel="name"
+                optionValue="id"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                placeholder="Is On Sale"
+              >
+              </p-dropdown>
+              <small
+                *ngIf="
+                  cityPriceForm.controls.is_on_sale.touched &&
+                  cityPriceForm.value?.is_on_sale == -1
+                "
+                class="p-error"
+                >Please select Value</small
+              >
+            </span>
+          </div>
+          <div class="col-md-4 mb-3 p-field">
+            <span class="">
+              <input
+                value="{{ cityPriceForm.value?.sale_price }}"
+                pInputText
+                formControlName="sale_price"
+                class="w-100"
+                type="number"
+                placeholder="Sale Price"
+                required
+              />
+              <small
+                *ngIf="
+                  cityPriceForm.controls.sale_price.touched &&
+                  cityPriceForm.value?.sale_price == ''
+                "
+                class="p-error"
+                >Please enter Value</small
+              >
+            </span>
+          </div>
+
+          <input
+            hidden
+            formControlName="product_variable_id"
+            class="w-100"
+            type="number"
+            value="{{ currentProductVariable.id }}"
+          />
+          <div class="row my-2">
+            <div class="col-md-12 align-content-end">
+              <button
+                (click)="createNewCityPrice()"
+                pRipple
+                class="btn btn-primary"
+              >
+                Add/Update City Price
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>City Name</th>
+                <th>Price</th>
+                <th>Is On Sale</th>
+                <th>Sale Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let eachItem of currentProductVariable['city_price']">
+                <td>{{ eachItem?.city?.name }}</td>
+                <th>{{ eachItem?.price }}</th>
+                <th>{{ eachItem?.is_on_sale ? "Yes" : "No" }}</th>
+                <th>{{ eachItem?.sale_price }}</th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="modalRef.hide()">
+      Close
+    </button>
+  </div>
+</ng-template>
+
+<div
+  [style.display]="showModal ? 'block' : 'none'"
+  class="modal"
+  id="imagemodal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Image preview</h4>
+      </div>
+      <div class="modal-body">
+        <img
+          src="{{ commonService.baseUrl }}{{ imagesrc }}"
+          id="imagepreview"
+          style="width: 425px; height: 425px"
+        />
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-default"
+          data-dismiss="modal"
+          (click)="hide()"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Add New Image -->
+<ng-template #template>
+  <form [formGroup]="categoryForm" (submit)="addImages()">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Add New Product Image</h4>
+      <button
+        type="button"
+        class="close pull-right"
+        aria-label="Close"
+        (click)="modalRef.hide()"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-sm-4">
+          <label>Select Product</label><br />
+          <p-dropdown
+            [options]="productList"
+            formControlName="product_id"
+            optionLabel="product_name"
+            [style]="{ width: '70%' }"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select a Product"
+          >
+          </p-dropdown>
+        </div>
+        <div class="col-md-4">
+          <label>Product Images</label><br />
+          <input
+            type="file"
+            class="p-inputtext"
+            (change)="onFileSelected($event)"
+            [style]="{ width: '70%' }"
+            formControlName="image_url"
+            required
+          />
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-sm-4 mb-0">
+          <span class="alert text-danger">{{ msg }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="button" class="btn btn-danger" (click)="modalRef.hide()">
+        Close
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<!-- Add New Color -->
+<ng-template #template>
+  <form [formGroup]="categoryForm" (submit)="addImages()">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Add New Product Color</h4>
+      <button
+        type="button"
+        class="close pull-right"
+        aria-label="Close"
+        (click)="modalRef.hide()"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-sm-4">
+          <label>Select Product</label><br />
+          <p-dropdown
+            [options]="productList"
+            formControlName="product_id"
+            optionLabel="product_name"
+            [style]="{ width: '70%' }"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select a Product"
+          >
+          </p-dropdown>
+        </div>
+        <div class="col-md-4">
+          <label>Product Images</label><br />
+          <input
+            type="file"
+            class="p-inputtext"
+            (change)="onFileSelected($event)"
+            [style]="{ width: '70%' }"
+            formControlName="image_url"
+            required
+          />
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-sm-4 mb-0">
+          <span class="alert text-danger">{{ msg }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="button" class="btn btn-danger" (click)="modalRef.hide()">
+        Close
+      </button>
+    </div>
+  </form>
+</ng-template>
+<!-- =========================== -->
+
+<ng-template #newtemplate>
+  <form [formGroup]="updateForm">
+    <div class="modal-header" *ngIf="selectedData">
+      <h4 class="modal-title pull-left">Edit Product</h4>
+      <button
+        type="button"
+        class="close pull-right"
+        aria-label="Close"
+        (click)="modalRef.hide()"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-sm-4">
+          <label>Select Product</label><br />
+          <p-dropdown
+            [options]="productList"
+            [style]="{ width: '70%' }"
+            [(ngModel)]="selectedProduct"
+            formControlName="product_id"
+            optionLabel="product_name"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select Category"
+          >
+          </p-dropdown>
+        </div>
+        <div class="col-md-4">
+          <label>Select Product Image</label><br />
+          <div class="row">
+            <input
+              *ngIf="showImageSelectionInput"
+              title="{{ selectedFile != null ? selectedFile.name : '' }}"
+              type="file"
+              (change)="onFileSelected($event)"
+              class="col-xl-7"
+              formControlName="image_url"
+              required
+            />
+            <img
+              *ngIf="showImageSelectionInput == false"
+              class="col-xl-5"
+              src="{{ selectedData.image_url }}"
+              alt="No image found"
+              width="150px"
+              height="75px"
+            />
+            <button
+              *ngIf="showImageSelectionInput == false"
+              type="button"
+              class="btn btn-info col-xl-3"
+              style="height: 35px; text-align: center"
+              (click)="showInputFileButton()"
+            >
+              Change
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="submit"
+        (click)="update(selectedData.id)"
+        class="btn btn-primary"
+      >
+        Update
+      </button>
+      <button type="button" class="btn btn-danger" (click)="hideModal()">
+        Close
+      </button>
+    </div>
+  </form>
+</ng-template>

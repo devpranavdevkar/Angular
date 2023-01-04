@@ -1,0 +1,340 @@
+<div class="mx-5">
+    <div class="row">
+      <div class="col-12 align-items-center d-flex justify-content-between">
+        <div class="table-header">Product</div>
+        <div class="mr-md-5 mr-sm-0">
+          <div class="btn-group mr-2" dropdown>
+            <button type="button" class="btn add-new-btn" (click)="openModalWithClass(template)">New</button>
+            <select (change)="onTableSizeChange($event)" class="custom-select items-per-page-dropdown">
+              <option *ngFor="let size of tableSizes">
+                {{ size }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+
+      <div class="card-body">
+        <div class="row mx-2" *ngIf="product?.length>0">
+          <table class="table table-borderless">
+            <thead>
+            <tr>
+              <th>ID</th>
+              <th>Product Name</th>
+              <th>Product Image</th>
+              <th>Price</th>
+              <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let post of product | paginate : {
+                    itemsPerPage: tableSize,
+                    currentPage: currentPage+1,
+                    totalItems: totalCount
+                  };
+            let i = index">
+              <th scope="row">{{i+1}}</th>
+              <td>{{post.product_name}}</td>
+              <td (click) = "show(post.primary_image)"><img style="max-width: 100px;" id="imageresource" src="{{commonService.baseUrl}}{{post.primary_image}}" ></td>
+              <td>{{post.price}}</td>
+              <td>
+                <a routerLink="/metadata/product_details/{{post.id}}" routerLinkActive="active" ><button type="button" class="btn table-action"><i class="fa fa-eye" aria-hidden="true"></i></button></a>
+                <a><button type="button" class="btn table-action" (click)="selectData(post)" (click)="openModalWithClass(newtemplate)"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                <a><button type="button" class="btn table-action" (click)="deleteProduct(post.id)"><i class="fa fa-trash-o" aria-hidden="true"></i></button></a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <hr>
+        <div class="row mx-2" *ngIf="product?.length > 0">
+          <div class="d-flex justify-content-center">
+            <pagination-controls
+              previousLabel="Prev"
+              nextLabel="Next"
+              (pageChange)="onTableDataChange($event)">
+            </pagination-controls>
+          </div>
+        </div>
+        <div class="row mx-2" *ngIf="product?.length == 0">
+          <div class="d-flex justify-content-center">
+            <p>No Data Available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <ng-template #template>
+    <form [formGroup]="productForm" (submit)="addProduct()">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Add New Product</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <div class="col-lg-12">
+          <div class="row">
+
+            <div class="col-sm-4">
+              <label>Select Category</label><br>
+              <p-dropdown [options]="category" formControlName="category_id" optionLabel="category_name" [style]="{'width': '70%'}"
+               [filter]="true" filterBy="name" [showClear]="true" placeholder="Select a Category">
+                <ng-template let-country pTemplate="item">
+                  <div class="country-item">
+                    <div>{{country.category_name}}</div>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
+<!--            <div class="col-sm-4">-->
+<!--              <label>Select Sub-Category</label><br>-->
+<!--              <p-dropdown [options]="subcategory"-->
+<!--              formControlName="sub_category_id" optionLabel="category_name" [style]="{'width': '70%'}"-->
+<!--               [filter]="true" filterBy="name" [showClear]="true" placeholder="Select a Category">-->
+<!--                <ng-template let-country pTemplate="item">-->
+<!--                  <div class="country-item">-->
+<!--                    <div>{{country.category_name}}</div>-->
+<!--                  </div>-->
+<!--                </ng-template>-->
+<!--              </p-dropdown>-->
+<!--            </div>-->
+            <div class="col-sm-4">
+                  <label>Product Name</label><br>
+                  <input  type="text" class="p-inputtext" placeholder="Product Name" [style]="{'width': '70%'}"
+                  formControlName="product_name" required>
+            </div>
+
+            <div class="col-sm-4">
+              <label>Primary Image</label><br>
+              <input type="file" class="p-inputtext" (change)="onFileSelected($event)" [style]="{'width': '70%'}"
+                     formControlName="primary_image" required >
+
+
+          </div>
+          <div class="row mt-4">
+            <div class="col-sm-4">
+                  <label>Description</label><br>
+                  <input  type="text" class="p-inputtext" placeholder="Description" [style]="{'width': '70%'}"
+                  formControlName="description" required >
+            </div>
+              <div class="col-sm-4">
+                      <label>Price</label><br>
+                      <input   type="text" class="p-inputtext" placeholder="Price" [style]="{'width': '70%'}"
+                      formControlName="price" required >
+                </div>
+                <div class="col-sm-4">
+                      <label>MRP</label><br>
+                      <input  type="text" class="p-inputtext" placeholder="MRP" [style]="{'width': '70%'}"
+                      formControlName="mrp" required >
+                </div>
+          </div>
+          <div class="row mt-4">
+            <div class="col-sm-4">
+              <label>Select IS Sale</label><br>
+                  <p-dropdown [options]="yesorno" (onChange)="onChangeIsSale($event)" formControlName="is_on_sale" optionLabel="label" optionValue="value"
+                  [filter]="true" filterBy="label" [showClear]="true" placeholder="Select is on Sale or Not" [style]="{'width': '70%'}">
+
+                  </p-dropdown>
+            </div>
+            <div class="col-sm-4">
+              <label>Select Is Live</label><br>
+                  <p-dropdown [options]="yesorno" formControlName="is_live" optionLabel="label" optionValue="value"
+                  [filter]="true" filterBy="label" [showClear]="true" placeholder="Select Is Live or Not" [style]="{'width': '70%'}">
+
+                  </p-dropdown>
+            </div>
+              <div class="col-sm-4">
+                  <label>Select Is New</label><br>
+                      <p-dropdown [options]="yesorno" formControlName="is_new" optionLabel="label" optionValue="value"
+                      [filter]="true" filterBy="label" [showClear]="true" placeholder="Select Is New or Not" [style]="{'width': '70%'}">
+
+                      </p-dropdown>
+                </div>
+
+          </div>
+          <div class="row mt-4">
+            <div class="col-sm-4">
+              <label>Description Image</label><br>
+              <input type="file" class="p-inputtext" (change)="onDescriptionImageFileSelected($event)"
+                     [style]="{'width': '70%'}"
+                     formControlName="description_image" required >
+
+              </div>
+              <div class="col-sm-4">
+                <label>Is Available For Pan India</label><br>
+                <p-dropdown [options]="yesorno" formControlName="is_all_over_india" optionLabel="label" optionValue="value"
+                      [filter]="true" filterBy="label" [showClear]="true" placeholder="Is Available For Pan India" [style]="{'width': '70%'}">
+
+                      </p-dropdown>
+              </div>
+                <div class="col-sm-4" *ngIf="is_on_Sale">
+                  <label>Sale Price</label><br>
+                  <input   type="text" class="p-inputtext" placeholder="Sale Price" [style]="{'width': '70%'}"
+                  formControlName="sale_price" required >
+                </div>
+                <div class="col-sm-4" *ngIf="is_on_Sale">
+                  <label>Sale Percentage</label><br>
+                  <input   type="text" class="p-inputtext" placeholder="Sale Percentage" [style]="{'width': '70%'}"
+                  formControlName="sale_percentage" required >
+                </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-sm-4 mb-0">
+              <span class="alert text-danger">{{msg}}</span>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="button" class="btn btn-danger" (click)="modalRef.hide()">Close</button>
+    </div>
+    </div>
+  </form>
+
+  </ng-template>
+
+
+
+  <ng-template #newtemplate>
+    <form [formGroup]="updateForm">
+    <div class="modal-header" *ngIf="selectedData">
+        <h4 class="modal-title pull-left">Edit Product</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="col-lg-12">
+          <div class="row">
+            <div class="col-sm-4">
+              <label>Select Category</label><br>
+              <p-dropdown [options]="category" [style]="{'width': '70%'}" [(ngModel)]="selectedCategory"
+              formControlName="category_id" (onChange)="onChangeCategory($event)"
+              optionLabel="category_name" [filter]="true" filterBy="name" [showClear]="true" placeholder="Select Category">
+            </p-dropdown>
+            </div>
+            <div class="col-sm-4">
+              <label>Select Is Live</label><br>
+              <p-dropdown [options]="yesorno" [(ngModel)]="selectedIslive" formControlName="is_live" optionLabel="label"
+                          [filter]="true" filterBy="label" [showClear]="true" placeholder="Select Is Live or Not" [style]="{'width': '70%'}">
+
+              </p-dropdown>
+            </div>
+            <div class="col-sm-4">
+                  <label>Product Name</label><br>
+                  <input  type="text" class="p-inputtext" placeholder="Product Name" [style]="{'width': '70%'}"
+                  formControlName="product_name" required [(ngModel)]="selectedData.product_name">
+            </div>
+
+
+          </div>
+          <div class="row mt-4">
+            <div class="col-sm-4">
+                  <label>Description</label><br>
+                  <input  type="text" class="p-inputtext"  placeholder="Description" [style]="{'width': '70%'}"
+                  formControlName="description" required [(ngModel)]="selectedData.description">
+            </div>
+              <div class="col-sm-4">
+                      <label>Price</label><br>
+                      <input   type="text"  class="p-inputtext" placeholder="Price" [style]="{'width': '70%'}"
+                      formControlName="price" required [(ngModel)]="selectedData.price">
+                </div>
+                <!-- <div class="col-sm-4">
+                  <label>MRP</label><br>
+                  <input  type="text" class="p-inputtext" placeholder="MRP" [style]="{'width': '70%'}"
+                  formControlName="mrp" required [(ngModel)]="selectedData.mrp">
+            </div> -->
+          </div>
+          <div class="row mt-4">
+              <div class="col-sm-4">
+                  <label>Select IS Sale</label><br>
+                      <p-dropdown [options]="yesorno" [(ngModel)]="selectedIsSale" formControlName="is_on_sale" optionLabel="label"
+                      [filter]="true" filterBy="label" [showClear]="true" placeholder="Select is on Sale or Not"
+                      (onChange)="onChangeSale($event)" [style]="{'width': '70%'}">
+                      </p-dropdown>
+                </div>
+                <div class="col-sm-4">
+                  <label>Select Is New</label><br>
+                      <p-dropdown [options]="yesorno" [(ngModel)]="selectedIsnew" formControlName="is_new" optionLabel="label"
+                      [filter]="true" filterBy="label" [showClear]="true" placeholder="Select Is Live or Not" [style]="{'width': '70%'}">
+
+                      </p-dropdown>
+                </div>
+              <div class="col-sm-4">
+                      <label>Primary Image</label><br>
+                      <input *ngIf="showImageSelectionInput" title="{{selectedFile!=null?selectedFile.name:''}}" type="file" (change)="onFileSelected($event)"
+                        class="col-xl-7"formControlName="primary_image" required >
+                      <img *ngIf="showImageSelectionInput==false" class="col-xl-5" src="{{selectedData.primary_image_url}}" alt="No image found" width="150px" height="75px">
+                      <button *ngIf="showImageSelectionInput==false" type="button" class="btn btn-info col-xl-3"
+                        style="height: 35px;text-align: center" (click)="showInputFileButton()">Change</button>
+              </div>
+
+          </div>
+          <div class="row mt-4">
+            <div class="col-sm-4" *ngIf="is_on_Sale">
+              <label>Sale Price</label><br>
+              <input   type="text" class="p-inputtext" placeholder="Sale Price" [style]="{'width': '70%'}"
+              formControlName="sale_price" required [(ngModel)]="selectedData.sale_price">
+            </div>
+            <div class="col-sm-4" *ngIf="is_on_Sale">
+              <label>Sale Percentage</label><br>
+              <input   type="text" class="p-inputtext" placeholder="Sale Percentage" [style]="{'width': '70%'}"
+              formControlName="sale_percentage" required [(ngModel)]="selectedData.sale_percentage">
+            </div>
+          </div>
+
+          <div class="row mt-4">
+            <div class="col-sm-4">
+              <label>Description Image</label><br>
+              <input *ngIf="showDescriptionImageSelectionInput" title
+                ="{{selectedDescriptionFile!=null?selectedDescriptionFile.name:''}}"
+                     type="file" (change)="onDescriptionImageFileSelected($event)"
+                     class="col-xl-7" formControlName="description_image" required >
+              <img *ngIf="showDescriptionImageSelectionInput==false" class="col-xl-5"
+                   src="{{selectedData.description_image_url}}" alt="No image found" width="150px" height="75px">
+              <button *ngIf="showDescriptionImageSelectionInput==false"
+                      type="button" class="btn btn-info col-xl-3"
+                      style="height: 35px;text-align: center" (click)="showInputDescriptionFileButton()">Change</button>
+            </div>
+            <div class="col-sm-4">
+              <label>Is Available For Pan India</label><br>
+              <p-dropdown [options]="yesorno" formControlName="is_all_over_india" optionLabel="label"
+                     [(ngModel)]="selectedIsAllIndia"
+                      [filter]="true" filterBy="label" [showClear]="true"
+                      placeholder="Is Available For Pan India" [style]="{'width': '70%'}">
+              </p-dropdown>
+
+            </div>
+          </div>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" (click)="update(selectedData.id)" class="btn btn-primary">Update</button>
+      <button type="button" class="btn btn-danger" (click)="modalRef.hide()">Close</button>
+    </div>
+  </form>
+
+  </ng-template>
+  <div [style.display]="showModal ? 'block' : 'none'" class="modal" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myModalLabel">Image preview</h4>
+        </div>
+        <div class="modal-body">
+          <img src="{{commonService.baseUrl}}{{imagesrc}}" id="imagepreview" style="width: 425px; height: 425px;" >
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" (click) = "hide()">Close</button>
+        </div>
+      </div>
+    </div>
+    </div>
+

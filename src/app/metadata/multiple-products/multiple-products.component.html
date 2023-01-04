@@ -1,0 +1,162 @@
+<div class="mx-5">
+  <div class="row">
+    <div class="col-12 align-items-center d-flex justify-content-between">
+      <div class="table-header">Category</div>
+      <div class="mr-md-5 mr-sm-0">
+        <div class="btn-group mr-2" dropdown>
+          <button type="button" class="btn add-new-btn" (click)="openModalWithClass(template)">New</button>
+          <select (change)="onTableSizeChange($event)" class="custom-select items-per-page-dropdown">
+            <option *ngFor="let size of tableSizes">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+
+    <div class="card-body">
+      <div class="row mx-2" *ngIf="productList?.length>0">
+        <table class="table table-borderless">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <!-- <th>Category Name</th> -->
+            <th>Product Image</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let post of productList | paginate : {
+                  itemsPerPage: tableSize,
+                  currentPage: currentPage+1,
+                  totalItems: totalCount
+                };
+          let i = index">
+            <th scope="row">{{i+1}}</th>
+            <td>{{post}}</td>
+
+              <td (click) = "show(post.image_url)"><img style="max-width: 100px;" id="imageresource" src="{{commonService.baseUrl}}{{post.image_url}}" ></td>
+
+              <td>
+<!--                  <a routerLink="/metadata/subcategory/{{post.id}}" routerLinkActive="active" ><button type="button" class="btn table-action"><i class="fa fa-eye" aria-hidden="true"></i></button></a>-->
+                <a><button type="button" class="btn table-action" (click)="selectData(post)" (click)="openModalWithClass(newtemplate)"><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+                <a (click)="delete(post.id)"><button type="button" class="btn table-action"><i class="fa fa-trash-o" aria-hidden="true"></i></button></a>
+              </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <hr>
+      <div class="row mx-2" *ngIf="category?.length>0">
+        <div class="d-flex justify-content-center">
+          <pagination-controls
+            previousLabel="Prev"
+            nextLabel="Next"
+            (pageChange)="onTableDataChange($event)">
+          </pagination-controls>
+        </div>
+      </div>
+      <div class="row mx-2" *ngIf="category==null">
+        <div class="d-flex justify-content-center">
+          <p>No Data Available</p>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+
+</div>
+
+<ng-template #template>
+  <form [formGroup]="categoryForm" (submit)="addCategory()">
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Add New Product Image</h4>
+    <button type="button" class="close pull-right" aria-label="Close"  (click)="modalRef.hide()">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  <div class="modal-body">
+      <div class="row">
+        <div class="col-sm-4">
+          <label>Select Product</label><br>
+          <p-dropdown [options]="product" formControlName="product_id" optionLabel="product_name" [style]="{'width': '70%'}"
+           [filter]="true" filterBy="name" [showClear]="true" placeholder="Select a Product">
+          </p-dropdown>
+        </div>
+        <div class="col-md-4">
+              <label>Product Images</label><br>
+              <input type="file"   class="p-inputtext" (change)="onFileSelected($event)" [style]="{'width': '70%'}"
+              formControlName="image_url" required >
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-sm-4 mb-0">
+          <span class="alert text-danger">{{msg}}</span>
+        </div>
+      </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="button" class="btn btn-danger"  (click)="modalRef.hide()">Close</button>
+  </div>
+</form>
+</ng-template>
+
+
+
+<ng-template #newtemplate>
+  <form [formGroup]="updateForm">
+  <div class="modal-header" *ngIf="selectedData">
+    <h4 class="modal-title pull-left">Edit Product</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  <div class="modal-body">
+      <div class="row">
+        <div class="col-sm-4">
+          <label>Select Product</label><br>
+          <p-dropdown [options]="product" [style]="{'width': '70%'}" [(ngModel)]="selectedProduct"
+          formControlName="product_id"
+          optionLabel="product_name" [filter]="true" filterBy="name" [showClear]="true" placeholder="Select Category">
+        </p-dropdown>
+        </div>
+        <div class="col-md-4">
+              <label>Select Product Image</label><br>
+          <div class="row">
+            <input *ngIf="showImageSelectionInput" title="{{selectedFile!=null?selectedFile.name:''}}" type="file" (change)="onFileSelected($event)"
+                   class="col-xl-7" formControlName="image_url" required >
+            <img *ngIf="showImageSelectionInput==false" class="col-xl-5" src="{{selectedData.image_url}}" alt="No image found" width="150px" height="75px">
+            <button *ngIf="showImageSelectionInput==false" type="button" class="btn btn-info col-xl-3"
+              style="height: 35px;text-align: center" (click)="showInputFileButton()">Change</button>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" (click)="update(selectedData.id)" class="btn btn-primary">Update</button>
+    <button type="button" class="btn btn-danger" (click)="hideModal()">Close</button>
+  </div>
+</form>
+
+</ng-template>
+
+<div [style.display]="showModal ? 'block' : 'none'" class="modal" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Image preview</h4>
+      </div>
+      <div class="modal-body">
+        <img src="{{commonService.baseUrl}}{{imagesrc}}" id="imagepreview" style="width: 425px; height: 425px;" >
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" (click) = "hide()">Close</button>
+      </div>
+    </div>
+  </div>
+  </div>

@@ -1,0 +1,324 @@
+<div class="mx-5">
+  <div class="row">
+    <div class="col-12 align-items-center d-flex justify-content-between">
+      <div class="table-header">Pincode</div>
+      <div class="mr-md-5 mr-sm-0">
+        <div class="btn-group mr-2" dropdown>
+          <button
+            type="button"
+            class="btn add-new-btn"
+            (click)="openModalWithClass(template)"
+          >
+            New
+          </button>
+          <select
+            (change)="onTableSizeChange($event)"
+            class="custom-select items-per-page-dropdown"
+          >
+            <option *ngFor="let size of tableSizes">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row mx-2" *ngIf="pincodeData?.length > 0">
+        <table class="table table-borderless">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Pincode</th>
+              <th>City Id</th>
+              <th>Delivery Status</th>
+              <!-- <th>Delivery Status</th> -->
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="
+                let post of pincodeData
+                  | paginate
+                    : {
+                        itemsPerPage: tableSize,
+                        currentPage: currentPage + 1,
+                        totalItems: totalCount
+                      };
+                let i = index
+              "
+            >
+              <th scope="row">{{ i + 1 }}</th>
+              <td>{{ post.pincode }}</td>
+              <td>{{ post.city.name }}</td>
+              <td *ngIf="post.is_delivery_allowed == 1">Allowed</td>
+              <td *ngIf="post.is_delivery_allowed == 0">Not Allowed</td>
+              <!-- <td>
+                <p-inputSwitch
+                  [ngModel]="getValue(post.is_active)"
+                  (onChange)="onChangeIsDeliverable($event, post.id)"
+                ></p-inputSwitch>
+              </td> -->
+
+              <td>
+                <a
+                  ><button
+                    type="button"
+                    class="btn table-action"
+                    (click)="selectData(post)"
+                    (click)="openModalWithClass(newtemplate)"
+                  >
+                    <i class="fa fa-pencil" aria-hidden="true"></i></button
+                ></a>
+                <a
+                  ><button
+                    type="button"
+                    (click)="delete(post.id)"
+                    class="btn table-action"
+                  >
+                    <i class="fa fa-trash-o" aria-hidden="true"></i></button
+                ></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <hr />
+      <div class="row mx-2" *ngIf="pincodeData?.length > 0">
+        <div class="d-flex justify-content-center">
+          <pagination-controls
+            previousLabel="Prev"
+            nextLabel="Next"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+      </div>
+      <div class="row mx-2" *ngIf="pincodeData?.length == 0">
+        <div class="d-flex justify-content-center">
+          <p>No Data Available</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #template>
+  <form [formGroup]="pincodeForm" (submit)="addPincode()">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Add New Pincode</h4>
+      <button
+        type="reset"
+        class="close pull-right"
+        aria-label="Close"
+        (click)="modalRef.hide()"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-4">
+          <label>Select State</label><br />
+          <p-dropdown
+            [options]="states"
+            [(ngModel)]="credentials.state_id"
+            formControlName="state_id"
+            (onChange)="onChangeState($event)"
+            optionLabel="name"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select a State"
+            [style]="{ width: '70%' }"
+          >
+            <ng-template let-country pTemplate="item">
+              <div class="country-item">
+                <div>{{ country.name }}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
+        <div class="col-md-4">
+          <label>Select City</label><br />
+          <p-dropdown
+            [options]="cities"
+            [(ngModel)]="credentials.city_id"
+            formControlName="city_id"
+            [style]="{ width: '70%' }"
+            optionLabel="name"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select a City"
+          >
+            <ng-template let-country pTemplate="item">
+              <div class="country-item">
+                <div>{{ country.name }}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
+        <div class="col-md-4">
+          <label>Pincode</label><br />
+          <input
+            type="text"
+            class="p-inputtext"
+            placeholder="Enter Pincode"
+            formControlName="pincode"
+            [style]="{ width: '70%' }"
+            required
+            [(ngModel)]="credentials.pincode"
+          />
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-md-4">
+          <label>Select Is Allowed or Not</label><br />
+          <p-dropdown
+            [options]="isAllowed"
+            [(ngModel)]="credentials.is_delivery_allowed"
+            formControlName="is_delivery_allowed"
+            optionLabel="label"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select Allowed or Not"
+            [style]="{ width: '70%' }"
+          >
+            <ng-template let-country pTemplate="item">
+              <div class="country-item">
+                <div>{{ country.label }}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-sm-4 mb-0">
+          <span class="alert text-danger">{{ msg }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="reset" class="btn btn-danger" (click)="modalRef.hide()">
+        Close
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #newtemplate>
+  <form [formGroup]="UpdateForm">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Edit Pincode</h4>
+      <button
+        type="button"
+        class="close pull-right"
+        aria-label="Close"
+        (click)="modalRef.hide()"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-4">
+          <label>Select State</label><br />
+          <p-dropdown
+            [options]="states"
+            [(ngModel)]="selectedState"
+            formControlName="state_id"
+            (onChange)="onChangeState($event)"
+            optionLabel="name"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select a State"
+            [style]="{ width: '70%' }"
+          >
+            <ng-template let-country pTemplate="item">
+              <div class="country-item">
+                <div>{{ country.name }}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
+        <div class="col-md-4">
+          <label>Select City</label><br />
+          <p-dropdown
+            [options]="cities"
+            [(ngModel)]="selectedCity"
+            formControlName="city_id"
+            [style]="{ width: '70%' }"
+            optionLabel="name"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select a City"
+          >
+            <ng-template let-country pTemplate="item">
+              <div class="country-item">
+                <div>{{ country.name }}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
+        <div class="col-md-4">
+          <label>Pincode</label><br />
+          <input
+            type="text"
+            class="p-inputtext"
+            placeholder="Enter Pincode"
+            formControlName="pincode"
+            [style]="{ width: '70%' }"
+            required
+            [(ngModel)]="selectedData.pincode"
+          />
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-md-4">
+          <label>Select Is Allowed or Not</label><br />
+          <p-dropdown
+            [options]="isAllowed"
+            [(ngModel)]="selectedisAllowed"
+            formControlName="is_delivery_allowed"
+            optionLabel="label"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select Allowed or Not"
+            [style]="{ width: '70%' }"
+          >
+            <ng-template let-country pTemplate="item">
+              <div class="country-item">
+                <div>{{ country.label }}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-sm-4 mb-0">
+          <span class="alert text-danger">{{ msg }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="submit"
+        (click)="update(selectedData.id)"
+        class="btn btn-primary"
+      >
+        Submit
+      </button>
+      <button type="button" class="btn btn-danger" (click)="modalRef.hide()">
+        Close
+      </button>
+    </div>
+  </form>
+</ng-template>

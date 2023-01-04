@@ -1,0 +1,287 @@
+<div class="content-section introduction"></div>
+<div class="mx-5">
+  <div class="row">
+    <div class="col-12 align-items-center d-flex justify-content-between">
+      <div class="table-header">Product Review</div>
+      <div class="mr-md-5 mr-sm-0">
+        <div class="btn-group mr-2" dropdown>
+          <select
+            (change)="onTableSizeChange($event)"
+            class="custom-select items-per-page-dropdown"
+          >
+            <option *ngFor="let size of tableSizes">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="{{ orderId == null ? 'mx-0' : 'mx-0' }}">
+    <div class="card">
+      <p-tabView>
+        <p-tabPanel header="Pending">
+          <p></p>
+          <div class="card-body">
+            <div class="row" *ngIf="pendingReview?.length > 0">
+              <table class="table table-borderless">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Customer Name</th>
+                    <th>Product Name</th>
+                    <th>Rating</th>
+                    <th>Review</th>
+                    <th>View</th>
+
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let post of pendingReview
+                        | paginate
+                          : {
+                              itemsPerPage: tableSize,
+                              currentPage: currentPage + 1,
+                              totalItems: totalCount
+                            };
+                      let i = index
+                    "
+                  >
+                    <th scope="row">{{ i + 1 }}</th>
+                    <td>{{ post.customer?.["name"] }}</td>
+                    <td>{{ post.product?.["product_name"] }}</td>
+
+                    <td>{{ post.rating }}</td>
+                    <td>{{ post.review }}</td>
+
+                    <td>
+                      <a
+                        routerLink="/review-details/{{ post.id }}"
+                        routerLinkActive="active"
+                      >
+                        <i class="fa fa-eye" aria-hidden="true"></i
+                      ></a>
+                    </td>
+
+                    <td>
+                      <!--  -->
+
+                      <button
+                        type="button"
+                        (click)="acceptanceStatus(post.id, 'accept')"
+                        class="btn btn-success"
+                      >
+                        <!-- <i class="fa fa-check" aria-hidden="true"></i> -->Accept
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn btn-danger"
+                        (click)="acceptanceStatus(post.id, 'reject')"
+                      >
+                        <!-- <i class="fa fa-times" aria-hidden="true"></i> -->
+                        Reject
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <hr />
+            <div class="row mx-2" *ngIf="pendingReview?.length > 0">
+              <div class="d-flex justify-content-center">
+                <pagination-controls
+                  previousLabel="Prev"
+                  nextLabel="Next"
+                  (pageChange)="onTableDataChange($event)"
+                >
+                </pagination-controls>
+              </div>
+            </div>
+            <div class="row mx-2" *ngIf="pendingReview?.length == 0">
+              <div class="d-flex justify-content-center">
+                <p></p>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+        <p-tabPanel header="Accepted">
+          <div class="card-body">
+            <div class="row" *ngIf="acceptedReview?.length > 0">
+              <table class="table table-borderless">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Customer Name</th>
+                    <th>Product Name</th>
+                    <th>Rating</th>
+                    <th>Review</th>
+                    <th>View</th>
+
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let post of acceptedReview
+                        | paginate
+                          : {
+                              itemsPerPage: tableSize,
+                              currentPage: currentPage + 1,
+                              totalItems: totalCount
+                            };
+                      let i = index
+                    "
+                  >
+                    <th scope="row">{{ i + 1 }}</th>
+                    <td>{{ post.customer["name"] }}</td>
+                    <td>{{ post.product["product_name"] }}</td>
+
+                    <td>{{ post.rating }}</td>
+                    <td>{{ post.review }}</td>
+                    <td>
+                      <a
+                        routerLink="/review-details/{{ post.id }}"
+                        routerLinkActive="active"
+                      >
+                        <i class="fa fa-eye" aria-hidden="true"></i
+                      ></a>
+                    </td>
+
+                    <td>
+                      <!--  -->
+
+                      <button
+                        *ngIf="post?.is_accepted == 0"
+                        type="button"
+                        (click)="acceptanceStatus(post.id, 'accept')"
+                        class="btn btn-success"
+                      >
+                        <!-- <i class="fa fa-check" aria-hidden="true"></i> -->Accept
+                      </button>
+
+                      <button
+                        type="button"
+                        *ngIf="post?.is_accepted == 1"
+                        class="btn btn-danger"
+                        (click)="acceptanceStatus(post.id, 'reject')"
+                      >
+                        Reject
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <hr />
+            <div class="row mx-2" *ngIf="acceptedReview?.length > 0">
+              <div class="d-flex justify-content-center">
+                <pagination-controls
+                  previousLabel="Prev"
+                  nextLabel="Next"
+                  (pageChange)="onTableDataChange($event)"
+                >
+                </pagination-controls>
+              </div>
+            </div>
+            <div class="row mx-2" *ngIf="acceptedReview?.length == 0">
+              <div class="d-flex justify-content-center">
+                <p></p>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+        <p-tabPanel header="Rejected">
+          <div class="card-body">
+            <div class="row" *ngIf="rejectedReview?.length > 0">
+              <table class="table table-borderless">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Customer Name</th>
+                    <th>Product Name</th>
+                    <th>Rating</th>
+                    <th>Review</th>
+                    <th>View</th>
+
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let post of rejectedReview
+                        | paginate
+                          : {
+                              itemsPerPage: tableSize,
+                              currentPage: currentPage + 1,
+                              totalItems: totalCount
+                            };
+                      let i = index
+                    "
+                  >
+                    <th scope="row">{{ i + 1 }}</th>
+                    <td>{{ post.customer["name"] }}</td>
+                    <td>{{ post.product["product_name"] }}</td>
+
+                    <td>{{ post.rating }}</td>
+                    <td>{{ post.review }}</td>
+
+                    <td>
+                      <a
+                        routerLink="/review-details/{{ post.id }}"
+                        routerLinkActive="active"
+                      >
+                        <i class="fa fa-eye" aria-hidden="true"></i
+                      ></a>
+                    </td>
+
+                    <td>
+                      <button
+                        *ngIf="post?.is_accepted == 0"
+                        type="button"
+                        (click)="acceptanceStatus(post.id, 'accept')"
+                        class="btn btn-success"
+                      >
+                        Accept
+                      </button>
+
+                      <button
+                        type="button"
+                        *ngIf="post?.is_accepted == 1"
+                        class="btn btn-danger"
+                        (click)="acceptanceStatus(post.id, 'reject')"
+                      >
+                        Reject
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <hr />
+            <div class="row mx-2" *ngIf="rejectedReview?.length > 0">
+              <div class="d-flex justify-content-center">
+                <pagination-controls
+                  previousLabel="Prev"
+                  nextLabel="Next"
+                  (pageChange)="onTableDataChange($event)"
+                >
+                </pagination-controls>
+              </div>
+            </div>
+            <div class="row mx-2" *ngIf="rejectedReview?.length == 0">
+              <div class="d-flex justify-content-center">
+                <p></p>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+  </div>
+</div>

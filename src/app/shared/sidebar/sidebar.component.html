@@ -1,83 +1,153 @@
-<!--Start sidebar-wrapper-->
-<div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
-  <div class="brand-logo">
-    <a href="index.html">
-      <img
-        src="assets/images/logo-icon.png"
-        class="logo-icon"
-        alt="logo icon"
-      />
-      <h5 class="logo-text">Angular Admin</h5>
-    </a>
+<div class="sidebar" [ngClass]="sidebar()">
+  <div class="logo-details">
+    <img
+      src="/assets/images/logo.png"
+      class="logo-img"
+      (click)="onClickOpen()"
+      alt=""
+    />
+    <div class="logo_name">Intallicool Kidz</div>
+
+    <i
+      *ngIf="this.isButtonVisible"
+      class="menu-button bx bx-menu"
+      id="btn"
+      (click)="onClickOpen(); this.isButtonVisible = false"
+    ></i>
   </div>
-  <ul class="sidebar-menu do-nicescrol">
-    <li class="sidebar-header">MAIN NAVIGATION</li>
+  <metis-menu class="nav-list" toggle="true">
     <li>
-      <a href="index.html">
-        <i class="zmdi zmdi-view-dashboard"></i> <span>Dashboard</span>
+      <a routerLink="/dashboard">
+        <i class="fa fa-tachometer"></i>
+        <span class="links_name">Dashboard</span>
       </a>
+
+      <span class="tooltip">Dashboard</span>
+    </li>
+    <li *ngIf="isAdmin">
+      <a href="#" class="has-arrow" (click)="onItemClick()">
+        <i class="fa fa-image"></i>
+        <span class="links_name"> Banner</span>
+      </a>
+      <span class="tooltip">Banner</span>
+      <ul class="sub-element ml-4">
+        <li>
+          <a [routerLink]="['metadata', 'slideshow']">
+            <i class="bx bx-slideshow"></i>
+            <span class="links_name">Slideshow</span></a
+          >
+        </li>
+        <li>
+          <a [routerLink]="['metadata', 'divider-banner']">
+            <i class="bx bx-image"></i>
+            <span class="links_name">Divider Banner</span></a
+          >
+        </li>
+      </ul>
+    </li>
+    <li *ngIf="isAdmin">
+      <a href="#" class="has-arrow" (click)="onItemClick()">
+        <i class="fa fa-database"></i>
+        <span class="links_name"> Metadata</span>
+      </a>
+      <span class="tooltip">Metadata</span>
+      <ul class="sub-element ml-4">
+        <li>
+          <a [routerLink]="['metadata', 'pincode']">
+            <i class="bx bx-current-location"></i>
+            <span class="links_name">Pincode </span></a
+          >
+        </li>
+
+        <!-- <li>
+          <a [routerLink]="['metadata', 'wishlist']">
+            <i class="bx bx-heart"></i>
+            <span class="links_name">Wishlist </span></a
+          >
+        </li> -->
+      </ul>
+    </li>
+    <li *ngIf="isAdmin">
+      <a href="#" class="has-arrow" (click)="onItemClick()">
+        <i class="fa fa-product-hunt"></i>
+        <span class="links_name"> Inventory</span>
+      </a>
+      <span class="tooltip">Products</span>
+      <ul class="sub-element ml-4">
+        <li>
+          <a [routerLink]="['metadata', 'category']">
+            <i class="bx bx-category"></i>
+            <span class="links_name">Category</span>
+          </a>
+        </li>
+
+        <li>
+          <a [routerLink]="['metadata', 'product']">
+            <i class="bx bx-box"></i>
+            <span class="links_name">Product</span></a
+          >
+        </li>
+
+        <li>
+          <a [routerLink]="['metadata', 'coupon-code']">
+            <i class="bx bx-gift"></i>
+            <span class="links_name">Coupon Code </span></a
+          >
+        </li>
+
+        <li>
+          <a [routerLink]="['metadata', 'product_review']">
+            <i class="bx bx-chat"></i>
+            <span class="links_name">Product Review </span></a
+          >
+        </li>
+      </ul>
+    </li>
+    <li *ngIf="isAdmin">
+      <a href="#" class="has-arrow" (click)="onItemClick()">
+        <i class="bx bx-cart"></i>
+        <span class="links_name">Order</span>
+      </a>
+      <span class="tooltip">Dashboard</span>
+      <ul class="sub-element ml-4">
+        <li>
+          <a [routerLink]="['metadata', 'orders']">
+            <i class="bx bx-shopping-bag"></i>
+            <span class="links_name">Orders</span></a
+          >
+        </li>
+      </ul>
     </li>
 
-    <li>
-      <a href="icons.html">
-        <i class="zmdi zmdi-invert-colors"></i> <span>UI Icons</span>
+    <li *ngIf="isAdmin">
+      <a href="#" class="has-arrow" (click)="onItemClick()">
+        <i class="bx bx-user"></i>
+        <span class="links_name">Customer</span>
       </a>
+      <span class="tooltip">Dashboard</span>
+      <ul class="sub-element ml-4">
+        <li>
+          <a [routerLink]="['customer']">
+            <i class="bx bx-user"></i>
+            <span class="links_name">View Customer</span></a
+          >
+        </li>
+      </ul>
     </li>
-
-    <li>
-      <a href="forms.html">
-        <i class="zmdi zmdi-format-list-bulleted"></i> <span>Forms</span>
+    <li *ngIf="isAdmin">
+      <a href="#" class="has-arrow" (click)="onItemClick()">
+        <i class="fa fa-truck"></i>
+        <span class="links_name">Deliveries</span>
       </a>
+      <span class="tooltip">Dashboard</span>
+      <ul class="sub-element ml-4">
+        <li>
+          <a [routerLink]="['metadata', 'all_deliveries']">
+            <i class="fa fa-truck"></i>
+            <span class="links_name">All Deliveries</span></a
+          >
+        </li>
+      </ul>
     </li>
-
-    <li>
-      <a href="tables.html">
-        <i class="zmdi zmdi-grid"></i> <span>Tables</span>
-      </a>
-    </li>
-
-    <li>
-      <a href="calendar.html">
-        <i class="zmdi zmdi-calendar-check"></i> <span>Calendar</span>
-        <small class="badge float-right badge-light">New</small>
-      </a>
-    </li>
-
-    <li>
-      <a href="profile.html">
-        <i class="zmdi zmdi-face"></i> <span>Profile</span>
-      </a>
-    </li>
-
-    <li>
-      <a href="login.html" target="_blank">
-        <i class="zmdi zmdi-lock"></i> <span>Login</span>
-      </a>
-    </li>
-
-    <li>
-      <a href="register.html" target="_blank">
-        <i class="zmdi zmdi-account-circle"></i> <span>Registration</span>
-      </a>
-    </li>
-
-    <li class="sidebar-header">LABELS</li>
-    <li>
-      <a href="javaScript:void();"
-        ><i class="zmdi zmdi-coffee text-danger"></i> <span>Important</span></a
-      >
-    </li>
-    <li>
-      <a href="javaScript:void();"
-        ><i class="zmdi zmdi-chart-donut text-success"></i>
-        <span>Warning</span></a
-      >
-    </li>
-    <li>
-      <a href="javaScript:void();"
-        ><i class="zmdi zmdi-share text-info"></i> <span>Information</span></a
-      >
-    </li>
-  </ul>
+  </metis-menu>
 </div>
-<!--End sidebar-wrapper-->

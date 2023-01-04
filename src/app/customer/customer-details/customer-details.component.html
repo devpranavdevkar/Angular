@@ -1,0 +1,108 @@
+<div class="mx-5">
+  <div class="table-header">Customer Details</div>
+  <div class="card mt-4">
+    <div class="card-body">
+      <div class="col-sm-12">
+        <div class="row" *ngIf="customerData">
+          <div class="col-sm-3">
+            <label><small>Name</small></label><br>
+            <p>{{customerData?.name}}</p>
+          </div>
+          <div class="col-sm-3">
+            <label><small>Email</small></label><br>
+            <p>{{customerData?.email}}</p>
+          </div>
+          <div class="col-sm-3">
+            <label><small>Mobile Number</small></label><br>
+            <p>{{customerData?.mobile_number}}</p>
+          </div>
+          <div class="col-sm-3">
+            <label><small>Shop Name</small></label><br>
+            <p *ngIf="customerData.shopName">{{customerData?.shopName}}</p>
+            <p *ngIf="!customerData.shopName">None</p>
+          </div>
+        </div>
+        <div class="row mx-2" *ngIf="!customerData">
+          <div class="d-flex justify-content-center">
+            <p>No Data Available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mx-5">
+  <div class="row">
+    <div class="col-12 align-items-center d-flex justify-content-between">
+      <div class="table-header">Wallet Transactions</div>
+      <div class="mr-md-5 mr-sm-0">
+        <div class="btn-group mr-2" dropdown>
+          <button type="button" class="btn add-new-btn" >New</button>
+          <select (change)="onTableSizeChange($event)" class="custom-select items-per-page-dropdown">
+            <option *ngFor="let size of tableSizes">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+
+    <div class="card-body">
+      <div class="row mx-2" *ngIf="walletDetails?.length>0">
+        <table class="table table-borderless">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let post of walletDetails | paginate : {
+                  itemsPerPage: tableSize,
+                  currentPage: currentPage+1,
+                  totalItems: totalCount
+                };
+            let i = index">
+            <th scope="row">{{post.id}}</th>
+            <td *ngIf="post.type == 'debit'" class="text-danger">{{post.type}}</td>
+            <td *ngIf="post.type == 'credit'" class="text-success">{{post.type}}</td>
+            <td>{{post.created_at | date:'medium'}}</td>
+            <td>{{post.description}}</td>
+            <td>{{post.status}}</td>
+            <td>
+              <a><button routerLink="/customer/customer-details/{{post.id}}" type="button" class="btn table-action">
+                <span aria-hidden="true"><i class="fa fa-eye" aria-hidden="true"></i></span>
+              </button></a>
+              <!-- <a><button type="button" class="btn table-action" (click)="selectData(post)" ><i class="fa fa-pencil" aria-hidden="true"></i></button></a>
+              <a (click)="delete(post.id)"><button type="button" class="btn table-action"><i class="fa fa-trash-o" aria-hidden="true"></i></button></a> -->
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <hr>
+      <div class="row mx-2" *ngIf="walletDetails?.length>0">
+        <div class="d-flex justify-content-center">
+          <pagination-controls
+            previousLabel="Prev"
+            nextLabel="Next"
+            (pageChange)="onTableDataChange($event)">
+          </pagination-controls>
+        </div>
+      </div>
+      <div class="row mx-2" *ngIf="walletDetails?.length==0">
+        <div class="d-flex justify-content-center">
+          <p>No Data Available</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

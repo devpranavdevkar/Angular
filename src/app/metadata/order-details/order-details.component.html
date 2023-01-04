@@ -1,0 +1,103 @@
+<div class="mx-5">
+
+<div class="card">
+  <div class="card-body" *ngIf="orderDetails!=null">
+    <h5>Order Details</h5>
+    <hr>
+    <div class="row">
+      <p class="col-xl-6"><span>Order Reference : {{orderDetails['order_ref']}}</span>
+      </p>
+      <p class="col-xl-6"><span>Created at : {{orderDetails['created_at'] | date:'medium'}}</span>
+      </p>
+    </div>
+    <p><span>Payment Status : <span class="btn btn-success">{{orderDetails['paymentStatus'] | uppercase}}</span> </span>
+    </p>
+    <hr>
+    <h5>Address Details</h5>
+    <hr>
+    <div class="row">
+      <p class="col-xl-6"><span>Type : {{orderDetails['address_details']['address_name']}}</span>
+      </p>
+      <p class="col-xl-6"><span>Is Primary Address : {{orderDetails['address_details']['is_primary']==0?'No':'Yes'}}</span>
+      </p>
+    </div>
+
+    <div class="row">
+      <p class="col-xl-6"><span>First Name : {{orderDetails['address_details']['fname'] | titlecase}}</span>
+      </p>
+      <p class="col-xl-6"><span>Last Name : {{orderDetails['address_details']['lname'] | titlecase}}</span>
+      </p>
+    </div>
+
+    <p><span>Contact Number : {{orderDetails['address_details']['contact_number']}}</span>
+    </p>
+
+    <p><span>Address Line 1 : {{orderDetails['address_details']['address_line_1']}}</span>
+    </p>
+
+    <p><span>Address Line 2 : {{orderDetails['address_details']['address_line_2']}}</span>
+    </p>
+
+    <div class="row">
+      <p class="col-xl-6"><span>City : {{orderDetails['address_details']['city'] | titlecase}}</span>
+      </p>
+      <p class="col-xl-6"><span>State : {{orderDetails['address_details']['state'] | titlecase}}</span>
+      </p>
+    </div>
+
+    <div class="row">
+      <p class="col-xl-6"><span>Pincode : {{orderDetails['address_details']['pincode']}}</span>
+      </p>
+    </div>
+    <hr>
+    <h5>Item Details</h5>
+    <hr>
+<!--    Item details-->
+    <div *ngFor="let itemDetails of orderDetails['order_details'];">
+      <div class="row mb-5">
+        <img alt="NA" class="col-xl-4" (click) = "show(itemDetails['product_variable']['primary_image'])"  style="max-width: 100%; max-height: 100%;"  src="{{commonService.baseUrl+itemDetails['product_variable']['primary_image']}}" >
+        <div class="col-xl-8">
+          <p><span *ngIf="itemDetails.product_variable.product_details!=null">Name : {{itemDetails['product_variable']['product_details']['product_name']}}</span>
+          </p>
+          <p ><span>Qty : {{itemDetails['qty']}}</span>
+          </p>
+          <p ><span>Price : Rs {{itemDetails['product_variable']['is_on_sale']==0?
+            itemDetails['product_variable']['price'] :itemDetails['product_variable']['sale_price']}}</span>
+          </p>
+          <p ><span>Subscription Type : {{itemDetails['subscriptionType'] | uppercase}}</span>
+          </p>
+          <p *ngIf="itemDetails['subscriptionType']=='specifiedDays'" >
+            <span>Subscription Days : {{itemDetails['subscriptionDays'] | uppercase}}</span>
+          </p>
+          <p *ngIf="itemDetails['subscriptionType']!='oneTime'" ><span>Subscription Duration : {{itemDetails['subscription_validity']}} days</span>
+          </p>
+          <p ><span>Variable Name : {{itemDetails['product_variable']['size'] | uppercase}}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--subscription details-->
+    <hr>
+    <h5>Subscription Details</h5>
+    <hr>
+    <app-subscriptions orderId="{{orderDetails['id']}}"></app-subscriptions>
+  </div>
+</div>
+</div>
+
+<div [style.display]="showModal ? 'block' : 'none'" class="modal" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Image preview</h4>
+      </div>
+      <div class="modal-body">
+        <img src="{{commonService.baseUrl}}{{imagesrc}}" id="imagepreview" style="width: 425px; height: 425px;" >
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" (click) = "hide()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+

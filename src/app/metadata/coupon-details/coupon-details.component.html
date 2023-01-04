@@ -1,0 +1,68 @@
+<div class="mx-5">
+  <div class="table-header">Coupon Details</div>
+  <div class="card mt-4">
+    <div class="card-body">
+      <div class="col-sm-12">
+        <div class="row" *ngIf="coupondetails">
+          <div class="col-sm-6">
+            <div class="row">
+              <div class="col-sm-6">
+                <label><small>Coupon Code</small></label
+                ><br />
+
+                <p>{{ coupondetails?.coupon_name }}</p>
+              </div>
+              <div class="col-sm-6">
+                <label><small>Amount</small></label
+                ><br />
+                <p>{{ coupondetails?.amount }}</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <label><small>Description</small></label
+                ><br />
+                <p>{{ coupondetails?.description }}</p>
+              </div>
+              <div class="col-sm-6">
+                <label><small>Max Discount</small></label
+                ><br />
+                <p>{{ coupondetails?.max_discount }}</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <label><small>Start Date</small></label
+                ><br />
+                <p>{{ coupondetails?.start_date }}</p>
+              </div>
+              <div class="col-sm-6">
+                <label><small>End Date</small></label
+                ><br />
+                <p>{{ coupondetails?.end_date }}</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <label><small>Minimum Order Amount</small></label
+                ><br />
+                <p>{{ coupondetails?.min_order_amount }}</p>
+              </div>
+              <div class="col-sm-6">
+                <label><small>Is Active</small></label
+                ><br />
+                <p *ngIf="coupondetails?.is_active == 0">Inactive</p>
+                <p *ngIf="coupondetails?.is_active == 1">Active</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mx-2" *ngIf="!data">
+          <div class="d-flex justify-content-center">
+            <p>No Data Available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

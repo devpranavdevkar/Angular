@@ -1,0 +1,22 @@
+.add-new-btn{
+  background: #F98029;
+  box-shadow: 2px 2px 4px rgba(150, 161, 204, 0.32);
+  border-radius: 40px !important;
+  color: white;
+}
+
+.items-per-page-dropdown{
+  border-radius: 30px !important;
+}
+
+.table-header{
+  font-family: Fira Sans;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  display: flex;
+  align-items: center;
+  text-transform: capitalize;
+  color: #000000;
+}

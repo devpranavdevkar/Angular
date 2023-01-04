@@ -1,0 +1,422 @@
+<div class="mx-5">
+  <div class="row">
+    <div class="col-12 align-items-center d-flex justify-content-between">
+      <div class="table-header">Coupon Code</div>
+      <div class="mr-md-5 mr-sm-0">
+        <div class="btn-group mr-2" dropdown>
+          <button
+            type="button"
+            class="btn add-new-btn"
+            (click)="openModalWithClass(template)"
+          >
+            New
+          </button>
+          <select
+            (change)="onTableSizeChange($event)"
+            class="custom-select items-per-page-dropdown"
+          >
+            <option *ngFor="let size of tableSizes">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row mx-2" *ngIf="coupon?.length > 0">
+        <table class="table table-borderless">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Coupon Code</th>
+              <th>Amount</th>
+              <th>Max Discount</th>
+              <th>Min Order Amount</th>
+              <th>Active Status</th>
+      
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="
+                let post of coupon
+                  | paginate
+                    : {
+                        itemsPerPage: tableSize,
+                        currentPage: currentPage + 1,
+                        totalItems: totalCount
+                      };
+                let i = index
+              "
+            >
+              <th scope="row">{{ i + 1 }}</th>
+              <td>{{ post.coupon_name }}</td>
+              <td>{{ post.amount }}</td>
+              <td>{{ post.max_discount }}</td>
+              <td>{{ post.min_order_amount }}</td>
+              <!-- <td><p *ngIf="post?.is_active == 0">Inavtive</p>
+                <p *ngIf="post?.is_active == 1">Active</p></td> -->
+              <td>
+                <p-inputSwitch
+                  [ngModel]="getValue(post.is_active)"
+                  (onChange)="onChangeIsActive($event, post.id)"
+                ></p-inputSwitch>
+              </td>
+              <td>
+                <a
+                
+                  ><button type="button" class="btn table-action">
+                    <i class="fa fa-eye" aria-hidden="true"></i></button
+                ></a>
+                <a
+                  ><button
+                    type="button"
+                    class="btn table-action"
+                    (click)="selectData(post)"
+                    (click)="openModalWithClass(newtemplate)"
+                  >
+                    <i class="fa fa-pencil" aria-hidden="true"></i></button
+                ></a>
+                <a
+                  ><button
+                    type="button"
+                    class="btn table-action"
+                    (click)="deleteCoupon(post.id)"
+                  >
+                    <i class="fa fa-trash-o" aria-hidden="true"></i></button
+                ></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <hr />
+      <div class="row mx-2" *ngIf="coupon?.length > 0">
+        <div class="d-flex justify-content-center">
+          <pagination-controls
+            previousLabel="Prev"
+            nextLabel="Next"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+      </div>
+      <div class="row mx-2" *ngIf="coupon?.length == 0">
+        <div class="d-flex justify-content-center">
+          <p>No Data Available</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #template>
+  <form [formGroup]="couponForm" (submit)="addCoupon()">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Add New Coupon Code</h4>
+      <button
+        type="button"
+        class="close pull-right"
+        aria-label="Close"
+        (click)="modalRef.hide()"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="col-lg-12">
+        <div class="row">
+          <div class="col-sm-4">
+            <label>Coupon Name</label><br />
+            <input
+              type="text"
+              class="p-inputtext"
+              placeholder="Coupon Name"
+              [style]="{ width: '70%' }"
+              formControlName="coupon_name"
+              required
+            />
+          </div>
+          <div class="col-sm-4">
+            <label>Amount</label><br />
+            <input
+              type="text"
+              class="p-inputtext"
+              placeholder="Amount"
+              [style]="{ width: '70%' }"
+              formControlName="amount"
+              required
+            />
+          </div>
+          <div class="col-sm-4">
+            <label>Description</label><br />
+            <textarea
+              type="textarea"
+              rows="5"
+              class="p-inputtext"
+              placeholder="Description"
+              [style]="{ width: '70%' }"
+              formControlName="description"
+              required
+            ></textarea>
+          </div>
+
+          <div class="row mt-4">
+            <div class="col-sm-4">
+              <label>Max Discount (%)</label><br />
+              <input
+                type="text"
+                class="p-inputtext"
+                placeholder="Max Discount (%)"
+                [style]="{ width: '70%' }"
+                formControlName="max_discount"
+                required
+              />
+            </div>
+            <div class="col-sm-4">
+              <label>Start Date</label><br />
+              <input
+                type="date"
+                class="p-inputtext"
+                placeholder="Start Date"
+                [style]="{ width: '70%' }"
+                formControlName="start_date"
+                required
+              />
+            </div>
+            <div class="col-sm-4">
+              <label>End Date</label><br />
+              <input
+                type="date"
+                class="p-inputtext"
+                placeholder="End Date"
+                [style]="{ width: '70%' }"
+                formControlName="end_date"
+                required
+              />
+            </div>
+          </div>
+          <div class="row mt-4">
+            <div class="col-sm-4">
+              <label>Minimum Order Amount</label><br />
+              <input
+                type="text"
+                class="p-inputtext"
+                placeholder="Minimum Order Amount"
+                [style]="{ width: '70%' }"
+                formControlName="min_order_amount"
+                required
+              />
+            </div>
+            <!-- <div class="col-sm-4">
+              <label>Select Is Active</label><br />
+              <p-dropdown
+                [options]="yesorno"
+                (onChange)="onChangeIsActive($event)"
+                formControlName="is_active"
+                optionLabel="label"
+                optionValue="value"
+                [filter]="false"
+                filterBy="label"
+                [showClear]="true"
+                placeholder="Select is Active or Not"
+                [style]="{ width: '70%' }"
+              >
+              </p-dropdown>
+            </div> -->
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-sm-4 mb-0">
+              <span class="alert text-danger">{{ msg }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-danger" (click)="modalRef.hide()">
+          Close
+        </button>
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #newtemplate>
+  <form [formGroup]="updateForm">
+    <div class="modal-header" *ngIf="selectedData">
+      <h4 class="modal-title pull-left">Edit Coupon Code</h4>
+      <button
+        type="button"
+        class="close pull-right"
+        aria-label="Close"
+        (click)="modalRef.hide()"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="col-lg-12">
+        <div class="row">
+          <div class="col-sm-4">
+            <label>Coupon Name</label><br />
+            <input
+              type="text"
+              class="p-inputtext"
+              placeholder="Coupon Name"
+              [style]="{ width: '70%' }"
+              formControlName="coupon_name"
+              required
+              [(ngModel)]="selectedData.coupon_name"
+            />
+          </div>
+
+          <div class="col-sm-4">
+            <label>Price</label><br />
+            <input
+              type="text"
+              class="p-inputtext"
+              placeholder="Price"
+              [style]="{ width: '70%' }"
+              formControlName="amount"
+              required
+              [(ngModel)]="selectedData.amount"
+            />
+          </div>
+
+          <div class="col-sm-4">
+            <label>Description</label><br />
+            <textarea
+              type="textarea"
+              rows="5"
+              class="p-inputtext"
+              placeholder="Description"
+              [style]="{ width: '70%' }"
+              formControlName="description"
+              required
+              [(ngModel)]="selectedData.description"
+            ></textarea>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-sm-4">
+            <label>Max Discount (%)</label><br />
+            <input
+              type="text"
+              class="p-inputtext"
+              placeholder="Price"
+              [style]="{ width: '70%' }"
+              formControlName="max_discount"
+              required
+              [(ngModel)]="selectedData.max_discount"
+            />
+          </div>
+          <div class="col-sm-4">
+            <label>Start date</label><br />
+            <input
+              type="date"
+              class="p-inputtext"
+              placeholder="Description"
+              [style]="{ width: '70%' }"
+              formControlName="start_date"
+              required
+              [(ngModel)]="selectedData.start_date"
+            />
+          </div>
+          <div class="col-sm-4">
+            <label>End date</label><br />
+            <input
+              type="date"
+              class="p-inputtext"
+              placeholder="Description"
+              [style]="{ width: '70%' }"
+              formControlName="end_date"
+              required
+              [(ngModel)]="selectedData.end_date"
+            />
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-sm-4">
+            <label>Minimum Order Amount</label><br />
+            <input
+              type="text"
+              class="p-inputtext"
+              placeholder="Price"
+              [style]="{ width: '70%' }"
+              formControlName="min_order_amount"
+              required
+              [(ngModel)]="selectedData.min_order_amount"
+            />
+          </div>
+
+          <div class="col-sm-4">
+            <label>Select Is Active</label><br />
+            <p-dropdown
+              [options]="yesorno"
+              [(ngModel)]="selectedIsActive"
+              formControlName="is_active"
+              optionLabel="label"
+              [filter]="false"
+              filterBy="label"
+              [showClear]="true"
+              placeholder="Select is on Sale or Not"
+              [(ngModel)]="selectedData.is_active"
+            >
+            </p-dropdown>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="submit"
+        (click)="update(selectedData.id)"
+        class="btn btn-primary"
+      >
+        Update
+      </button>
+      <button type="button" class="btn btn-danger" (click)="modalRef.hide()">
+        Close
+      </button>
+    </div>
+  </form>
+</ng-template>
+<div
+  [style.display]="showModal ? 'block' : 'none'"
+  class="modal"
+  id="imagemodal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Image preview</h4>
+      </div>
+      <div class="modal-body">
+        <img
+          src="{{ commonService.baseUrl }}{{ imagesrc }}"
+          id="imagepreview"
+          style="width: 425px; height: 425px"
+        />
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-default"
+          data-dismiss="modal"
+          (click)="hide()"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,14 +1,25 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { SharedRoutingModule } from './shared-routing.module';
-import { HeaderComponent } from './header/header.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
-import { FooterComponent } from './footer/footer.component';
+import { HeaderComponent } from './header/header.component';
+import { MetismenuAngularModule } from '@metismenu/angular';
+import { ClickOutsideModule } from 'ng-click-outside';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { AppRoutingModule } from '../app-routing.module';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [HeaderComponent, SidebarComponent, FooterComponent],
-  imports: [CommonModule, SharedRoutingModule],
-  exports: [HeaderComponent, SidebarComponent, FooterComponent],
+  declarations: [SidebarComponent, HeaderComponent],
+  exports: [HeaderComponent, SidebarComponent],
+  imports: [
+    CommonModule,
+    MetismenuAngularModule,
+    ClickOutsideModule,
+    BsDropdownModule,
+    AppRoutingModule,
+    CollapseModule,
+    FormsModule,
+  ],
 })
 export class SharedModule {}

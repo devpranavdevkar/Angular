@@ -1,0 +1,7 @@
+.logo-img {
+  width: 50px !important;
+  height: 50px !important;
+}
+.menu-button:onclick {
+  color: red !important;
+}
